@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//
+// =====================================================
+// ENUMS
+// =====================================================
+//
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  GITHUB
+}
+
+enum ResumeStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ResumeSectionType {
+  PERSONAL_INFO
+  SUMMARY
+  EXPERIENCE
+  EDUCATION
+  SKILLS
+  PROJECTS
+  CERTIFICATIONS
+  ACHIEVEMENTS
+  LANGUAGES
+  CUSTOM
+}
+
+//
+// =====================================================
+// AUTH
+// =====================================================
+//
+
+model User {
+  id String @id @default(cuid())
+
+  firstName String
+  lastName  String
+
+  email    String  @unique
+  password String?
+
+  avatar String?
+
+  role     UserRole     @default(USER)
+  provider AuthProvider @default(EMAIL)
+
+  emailVerified   Boolean   @default(false)
+  emailVerifiedAt DateTime?
+
+  googleId String? @unique
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions            Session[]
+  verificationTokens  VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+
+  resumes Resume[]
+}
+
+model Session {
+  id String @id @default(cuid())
+
+  refreshToken String @unique
+
+  ipAddress String?
+  userAgent String?
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  id String @id @default(cuid())
+
+  token String @unique
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+
+  token String @unique
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Resume {
+  id String @id @default(cuid())
+
+  title String
+
+  slug String @unique
+
+  status ResumeStatus @default(DRAFT)
+
+  templateId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sections ResumeSection[]
+  versions ResumeVersion[]
+
+  @@index([userId])
+}
+
+model ResumeSection {
+  id String @id @default(cuid())
+
+  title String
+
+  type ResumeSectionType
+
+  position Int
+
+  content Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+}
+
+model ResumeVersion {
+  id String @id @default(cuid())
+
+  version Int
+
+  snapshot Json
+
+  createdAt DateTime @default(now())
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+}
