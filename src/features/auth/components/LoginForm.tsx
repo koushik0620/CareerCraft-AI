@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import AuthCard from "./AuthCard";
 import AuthFooter from "./AuthFooter";
@@ -38,59 +39,77 @@ export default function LoginForm() {
 
   return (
     <AuthCard>
-      <AuthHeader title="Welcome Back" subtitle="Sign in to continue." />
+      <AuthHeader
+        title="Welcome back"
+        subtitle="Sign in to continue building your career with AI."
+      />
 
-      {/* Google Login */}
       <GoogleLoginButton />
 
-      {/* Divider */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
+          <div className="w-full border-t border-border/70" />
         </div>
-
         <div className="relative flex justify-center">
-          <span className="bg-background px-3 text-xs uppercase text-muted-foreground">
-            Or continue with email
+          <span className="bg-card px-3 text-xs font-medium text-muted-foreground">
+            or continue with email
           </span>
         </div>
       </div>
 
-      {/* Email Login */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <Input placeholder="Email Address" {...register("email")} />
-
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@company.com"
+            className="h-11 rounded-xl"
+            {...register("email")}
+          />
           {errors.email && (
-            <p className="mt-2 text-sm text-red-500">{errors.email.message}</p>
+            <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
 
-        <PasswordField
-          register={register("password")}
-          error={errors.password}
-        />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <PasswordField
+            id="password"
+            register={register("password")}
+            error={errors.password}
+          />
+        </div>
 
         <Button
           type="submit"
-          className="w-full"
+          className="h-11 w-full rounded-xl"
           disabled={loginMutation.isPending}
         >
           {loginMutation.isPending ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing In...
+              <Loader2 className="animate-spin" />
+              Signing in...
             </>
           ) : (
-            "Sign In"
+            "Sign in"
           )}
         </Button>
       </form>
 
       <AuthFooter
-        leftText="Forgot Password?"
-        leftHref="/forgot-password"
-        rightText="Create Account"
+        leftText="New to CareerCraft?"
+        leftHref="/register"
+        rightText="Create account"
         rightHref="/register"
       />
     </AuthCard>

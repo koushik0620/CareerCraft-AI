@@ -14,14 +14,14 @@ export default function AuthFooter({
   rightHref,
 }: Props) {
   return (
-    <div className="mt-6 flex items-center justify-between text-sm">
-      <Link href={leftHref} className="text-primary hover:underline">
-        {leftText}
-      </Link>
-
-      <Link href={rightHref} className="text-primary hover:underline">
+    <p className="mt-6 text-center text-sm text-muted-foreground">
+      {leftText}{" "}
+      <Link
+        href={rightHref}
+        className="font-medium text-primary hover:underline"
+      >
         {rightText}
       </Link>
-    </div>
+    </p>
   );
 }

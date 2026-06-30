@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/components/providers/ThemeProvider";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import StoreProvider from "@/store/provider";
 import QueryProvider from "@/components/providers/QueryProvider";
-// export { defaultMetadata as metadata } from "@/config/metadata";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import AuthProvider from "@/components/providers/AuthProvider";
 
@@ -50,11 +47,7 @@ export default function RootLayout({
               <GoogleOAuthProvider
                 clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
               >
-                <AuthProvider>
-                  <Navbar />
-                  {children}
-                  <Footer />
-                </AuthProvider>
+                <AuthProvider>{children}</AuthProvider>
               </GoogleOAuthProvider>
             </QueryProvider>
           </StoreProvider>

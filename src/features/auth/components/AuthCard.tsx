@@ -1,26 +1,20 @@
 import { ReactNode } from "react";
 
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type AuthCardProps = {
   children: ReactNode;
   className?: string;
 };
 
-export default function AuthCard({ children, className = "" }: AuthCardProps) {
+export default function AuthCard({ children, className }: AuthCardProps) {
   return (
     <Card
-      className={`
-        w-full
-        max-w-md
-        rounded-3xl
-        border
-        bg-card/80
-        p-8
-        shadow-2xl
-        backdrop-blur-xl
-        ${className}
-      `}
+      className={cn(
+        "rounded-2xl border-border/70 bg-card p-8 shadow-xl shadow-primary/5",
+        className,
+      )}
     >
       {children}
     </Card>

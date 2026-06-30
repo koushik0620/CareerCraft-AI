@@ -6,11 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import AuthCard from "./AuthCard";
 import AuthFooter from "./AuthFooter";
 import AuthHeader from "./AuthHeader";
 import PasswordField from "./PasswordField";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 import { useRegister } from "../hooks/useRegister";
 import { RegisterSchema, registerSchema } from "../schemas/register.schema";
@@ -40,65 +42,103 @@ export default function RegisterForm() {
   return (
     <AuthCard>
       <AuthHeader
-        title="Create Account"
-        subtitle="Start building your AI-powered resume."
+        title="Create your account"
+        subtitle="Start building AI-powered resumes and tracking your career."
       />
+
+      <GoogleLoginButton />
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border/70" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-card px-3 text-xs font-medium text-muted-foreground">
+            or sign up with email
+          </span>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Input placeholder="First Name" {...register("firstName")} />
-
+          <div className="space-y-2">
+            <Label htmlFor="firstName">First name</Label>
+            <Input
+              id="firstName"
+              placeholder="Jane"
+              className="h-11 rounded-xl"
+              {...register("firstName")}
+            />
             {errors.firstName && (
-              <p className="mt-2 text-sm text-red-500">
+              <p className="text-sm text-destructive">
                 {errors.firstName.message}
               </p>
             )}
           </div>
 
-          <div>
-            <Input placeholder="Last Name" {...register("lastName")} />
-
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last name</Label>
+            <Input
+              id="lastName"
+              placeholder="Doe"
+              className="h-11 rounded-xl"
+              {...register("lastName")}
+            />
             {errors.lastName && (
-              <p className="mt-2 text-sm text-red-500">
+              <p className="text-sm text-destructive">
                 {errors.lastName.message}
               </p>
             )}
           </div>
         </div>
 
-        <div>
-          <Input placeholder="Email Address" {...register("email")} />
-
+        <div className="space-y-2">
+          <Label htmlFor="register-email">Email</Label>
+          <Input
+            id="register-email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@company.com"
+            className="h-11 rounded-xl"
+            {...register("email")}
+          />
           {errors.email && (
-            <p className="mt-2 text-sm text-red-500">{errors.email.message}</p>
+            <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
 
-        <PasswordField
-          placeholder="Password"
-          register={register("password")}
-          error={errors.password}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="register-password">Password</Label>
+          <PasswordField
+            id="register-password"
+            placeholder="Create a strong password"
+            register={register("password")}
+            error={errors.password}
+          />
+        </div>
 
-        <PasswordField
-          placeholder="Confirm Password"
-          register={register("confirmPassword")}
-          error={errors.confirmPassword}
-        />
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirm password</Label>
+          <PasswordField
+            id="confirm-password"
+            placeholder="Confirm your password"
+            register={register("confirmPassword")}
+            error={errors.confirmPassword}
+          />
+        </div>
 
         <Button
           type="submit"
-          className="w-full"
+          className="h-11 w-full rounded-xl"
           disabled={registerMutation.isPending}
         >
           {registerMutation.isPending ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating Account...
+              <Loader2 className="animate-spin" />
+              Creating account...
             </>
           ) : (
-            "Create Account"
+            "Create account"
           )}
         </Button>
       </form>
@@ -106,7 +146,7 @@ export default function RegisterForm() {
       <AuthFooter
         leftText="Already have an account?"
         leftHref="/login"
-        rightText="Sign In"
+        rightText="Sign in"
         rightHref="/login"
       />
     </AuthCard>

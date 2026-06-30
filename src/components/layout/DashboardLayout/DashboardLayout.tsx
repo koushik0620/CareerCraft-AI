@@ -5,24 +5,22 @@ import { ReactNode } from "react";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardTopbar from "./DashboardTopbar";
 
-interface Props {
+interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-export default function DashboardLayout({ children }: Props) {
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-muted/30">
       <DashboardSidebar />
 
-      {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Topbar */}
-        <DashboardTopbar />
+        <DashboardTopbar breadcrumb={{ label: "Overview" }} />
 
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-7xl p-6 lg:p-8">{children}</div>
+          <div className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-6 lg:py-8">
+            {children}
+          </div>
         </main>
       </div>
     </div>

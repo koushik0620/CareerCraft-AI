@@ -44,6 +44,34 @@ enum ResumeSectionType {
   CUSTOM
 }
 
+enum ApplicationStatus {
+  SAVED
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ActivityType {
+  RESUME_CREATED
+  RESUME_UPDATED
+  RESUME_DOWNLOADED
+  ATS_IMPROVED
+  JOB_APPLIED
+  JOB_SAVED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_COMPLETED
+  PROFILE_UPDATED
+}
+
 //
 // =====================================================
 // AUTH
@@ -77,7 +105,10 @@ model User {
   verificationTokens  VerificationToken[]
   passwordResetTokens PasswordResetToken[]
 
-  resumes Resume[]
+  resumes      Resume[]
+  applications JobApplication[]
+  interviews   Interview[]
+  activities   Activity[]
 }
 
 model Session {
@@ -129,16 +160,44 @@ model PasswordResetToken {
   @@index([userId])
 }
 
+//
+// =====================================================
+// RESUME MODULE (Phase 2 ready)
+// =====================================================
+//
+
+model ResumeTemplate {
+  id String @id @default(cuid())
+
+  name        String
+  slug        String  @unique
+  description String?
+  thumbnail   String?
+  category    String  @default("professional")
+  isPremium   Boolean @default(false)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resumes Resume[]
+
+  @@index([isActive, sortOrder])
+}
+
 model Resume {
   id String @id @default(cuid())
 
-  title String
-
-  slug String @unique
-
+  title  String
+  slug   String @unique
   status ResumeStatus @default(DRAFT)
 
   templateId String?
+  template   ResumeTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  atsScore          Int @default(0)
+  completionPercent Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,6 +209,8 @@ model Resume {
   versions ResumeVersion[]
 
   @@index([userId])
+  @@index([userId, updatedAt])
+  @@index([templateId])
 }
 
 model ResumeSection {
@@ -185,4 +246,95 @@ model ResumeVersion {
   resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
   @@index([resumeId])
+}
+
+//
+// =====================================================
+// CAREER MODULE (Phase 1 dashboard + future expansion)
+// =====================================================
+//
+
+model JobListing {
+  id String @id @default(cuid())
+
+  title       String
+  company     String
+  location    String
+  salary      String?
+  description String?
+  isRemote    Boolean @default(false)
+  isActive    Boolean @default(true)
+  externalUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications JobApplication[]
+
+  @@index([isActive])
+}
+
+model JobApplication {
+  id String @id @default(cuid())
+
+  jobTitle  String
+  company   String
+  location  String?
+  salary    String?
+  isRemote  Boolean           @default(false)
+  status    ApplicationStatus @default(APPLIED)
+  notes     String?
+  appliedAt DateTime          @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jobListingId String?
+  jobListing   JobListing? @relation(fields: [jobListingId], references: [id], onDelete: SetNull)
+
+  interviews Interview[]
+
+  @@index([userId])
+  @@index([userId, appliedAt])
+  @@index([jobListingId])
+}
+
+model Interview {
+  id String @id @default(cuid())
+
+  title       String
+  scheduledAt DateTime?
+  status      InterviewStatus @default(SCHEDULED)
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jobApplicationId String?
+  jobApplication   JobApplication? @relation(fields: [jobApplicationId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, scheduledAt])
+}
+
+model Activity {
+  id String @id @default(cuid())
+
+  type        ActivityType
+  title       String
+  description String?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }

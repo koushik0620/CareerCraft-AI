@@ -11,4 +11,8 @@ export const QUERY_KEYS = {
   TEMPLATE: {
     LIST: ["templates"] as const,
   },
+
+  DASHBOARD: {
+    OVERVIEW: ["dashboard", "overview"] as const,
+  },
 } as const;
