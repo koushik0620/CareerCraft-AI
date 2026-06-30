@@ -8,8 +8,10 @@ import {
 } from "../types/auth";
 
 class AuthService {
-  login(payload: LoginRequest) {
-    return api.post<AuthResponse>("/auth/login", payload);
+  async login(payload: LoginRequest) {
+    const { data } = await api.post<AuthResponse>("/auth/login", payload);
+
+    return data;
   }
 
   register(payload: RegisterRequest) {

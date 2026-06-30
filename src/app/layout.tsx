@@ -8,6 +8,7 @@ import StoreProvider from "@/store/provider";
 import QueryProvider from "@/components/providers/QueryProvider";
 // export { defaultMetadata as metadata } from "@/config/metadata";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import AuthProvider from "@/components/providers/AuthProvider";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -49,9 +50,11 @@ export default function RootLayout({
               <GoogleOAuthProvider
                 clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
               >
-                <Navbar />
-                {children}
-                <Footer />
+                <AuthProvider>
+                  <Navbar />
+                  {children}
+                  <Footer />
+                </AuthProvider>
               </GoogleOAuthProvider>
             </QueryProvider>
           </StoreProvider>
